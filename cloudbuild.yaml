@@ -1,17 +1,10 @@
+# cloudbuild.yaml
 steps:
-  # Step 1: Build the Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/my-project-406105/ankit-100921091/${_COMMIT_SHA}', '.']
-  # Step 2: Push the Docker image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/my-project-406105/ankit-100921091/${_COMMIT_SHA}']
-  # Step 3: Deploy the Docker container to Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
-    args: ['run', 'deploy', 'my-cloud-run-service', '--image', 'us-central1-docker.pkg.dev/my-project-406105/ankit-100921091/${_COMMIT_SHA}', '--platform', 'managed', '--region', 'us-central1', '--port', '8080']
-
+# Build Docker image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'us-central1-docker.pkg.dev/my-project-406105/ankit-100921091/node-app:$COMMIT_SHA', '.']
+  # Push docker image to artifactory
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-central1-docker.pkg.dev/my-project-406105/ankit-100921091/node-app:$COMMIT_SHA']
 options:
-  machineType: 'N1_HIGHCPU_8'
-  substitution_option: 'ALLOW_LOOSE'
-  logging: 'LEGACY'
-  dynamic_substitutions: true
+  defaultLogsBucketBehavior : REGIONAL_USER_OWNED_BUCKET
